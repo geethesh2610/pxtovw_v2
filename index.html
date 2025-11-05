@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>PX to VW Converter</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+
+	<!-- Google Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+
+	<!-- Meta Tags -->
+	<meta name="description" content="Convert any CSS property from pixels (px) to viewport width (vw) for responsive design.">
+	<meta name="keywords" content="px to vw, responsive design, css tools, tailwind converter">
+	<meta name="author" content="Geethesh Nair">
+	<meta name="theme-color" content="#1e293b" />
+
+	<!-- Favicon -->
+	<link rel="icon" href="https://fonts.gstatic.com/s/i/materialiconsoutlined/format_size/v18/24px.svg" type="image/svg+xml">
+
+	<style>
+		body {
+			font-family: "Manrope", sans-serif;
+		}
+
+		@media (max-width: 640px) {
+			.mobile-scroll {
+				overflow-x: auto;
+				-webkit-overflow-scrolling: touch;
+			}
+		}
+
+		/* Custom Dropdown Styles */
+		.custom-dropdown {
+			position: relative;
+		}
+
+		.dropdown-button {
+			appearance: none;
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+
+		.dropdown-button:hover {
+			border-color: #475569;
+			background-color: #1e293b;
+		}
+
+		.dropdown-button:focus {
+			outline: none;
+			border-color: #3b82f6;
+			box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+		}
+
+		.dropdown-arrow {
+			position: absolute;
+			right: 12px;
+			top: 50%;
+			transform: translateY(-50%);
+			pointer-events: none;
+			transition: transform 0.2s ease;
+		}
+
+		.dropdown-button.open .dropdown-arrow {
+			transform: translateY(-50%) rotate(180deg);
+		}
+
+		.dropdown-menu {
+			position: absolute;
+			top: calc(100% + 8px);
+			left: 0;
+			right: 0;
+			background: #1e293b;
+			border: 1px solid #334155;
+			border-radius: 12px;
+			box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+			max-height: 320px;
+			overflow-y: auto;
+			z-index: 50;
+			opacity: 0;
+			visibility: hidden;
+			transform: translateY(-8px);
+			transition: all 0.2s ease;
+		}
+
+		.dropdown-menu.show {
+			opacity: 1;
+			visibility: visible;
+			transform: translateY(0);
+		}
+
+		.dropdown-option {
+			padding: 12px 16px;
+			cursor: pointer;
+			transition: all 0.15s ease;
+			font-size: 14px;
+			color: #cbd5e1;
+		}
+
+		.dropdown-option:hover {
+			background-color: #334155;
+		}
+
+		.dropdown-option.selected {
+			background-color: #1e3a8a;
+			color: #60a5fa;
+			font-weight: 600;
+		}
+
+		/* Visual Box Model for Side Selection */
+		.box-model {
+			display: grid;
+			grid-template-columns: 1fr 2fr 1fr;
+			grid-template-rows: 1fr 2fr 1fr;
+			gap: 8px;
+			padding: 16px;
+			background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+			border-radius: 16px;
+			border: 2px solid #334155;
+		}
+
+		.box-center {
+			grid-column: 2;
+			grid-row: 2;
+			background: #0f172a;
+			border: 2px dashed #475569;
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 12px;
+			color: #64748b;
+			font-weight: 600;
+		}
+
+		.side-visual-btn {
+			position: relative;
+			padding: 12px;
+			font-size: 12px;
+			font-weight: 600;
+			color: #94a3b8;
+			background: #0f172a;
+			border: 2px solid #334155;
+			border-radius: 10px;
+			cursor: pointer;
+			transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			min-height: 48px;
+		}
+
+		.side-visual-btn:hover {
+			border-color: #64748b;
+			background: #1e293b;
+			transform: scale(1.05);
+		}
+
+		.side-visual-btn.active {
+			background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+			color: white;
+			border-color: #2563eb;
+			box-shadow: 0 8px 16px rgba(37, 99, 235, 0.4);
+			transform: scale(1.08);
+		}
+
+		.side-visual-btn.top {
+			grid-column: 2;
+			grid-row: 1;
+		}
+
+		.side-visual-btn.right {
+			grid-column: 3;
+			grid-row: 2;
+		}
+
+		.side-visual-btn.bottom {
+			grid-column: 2;
+			grid-row: 3;
+		}
+
+		.side-visual-btn.left {
+			grid-column: 1;
+			grid-row: 2;
+		}
+
+		.side-visual-btn.top-left {
+			grid-column: 1;
+			grid-row: 1;
+		}
+
+		.side-visual-btn.top-right {
+			grid-column: 3;
+			grid-row: 1;
+		}
+
+		.side-visual-btn.bottom-right {
+			grid-column: 3;
+			grid-row: 3;
+		}
+
+		.side-visual-btn.bottom-left {
+			grid-column: 1;
+			grid-row: 3;
+		}
+
+		/* Simple side buttons for x/y */
+		.simple-sides {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 12px;
+		}
+
+		.simple-side-btn {
+			padding: 16px;
+			font-size: 14px;
+			font-weight: 600;
+			color: #94a3b8;
+			background: #0f172a;
+			border: 2px solid #334155;
+			border-radius: 12px;
+			cursor: pointer;
+			transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+		}
+
+		.simple-side-btn:hover {
+			border-color: #64748b;
+			background: #1e293b;
+			transform: translateY(-2px);
+		}
+
+		.simple-side-btn.active {
+			background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+			color: white;
+			border-color: #2563eb;
+			box-shadow: 0 8px 16px rgba(37, 99, 235, 0.4);
+			transform: translateY(-3px);
+		}
+
+		/* Smooth scrollbar */
+		.dropdown-menu::-webkit-scrollbar {
+			width: 8px;
+		}
+
+		.dropdown-menu::-webkit-scrollbar-track {
+			background: #0f172a;
+			border-radius: 10px;
+		}
+
+		.dropdown-menu::-webkit-scrollbar-thumb {
+			background: #475569;
+			border-radius: 10px;
+		}
+
+		.dropdown-menu::-webkit-scrollbar-thumb:hover {
+			background: #64748b;
+		}
+
+		/* Input focus improvements */
+		input[type="number"]:focus {
+			outline: none;
+			border-color: #3b82f6;
+			box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+		}
+
+		/* Toggle improvements */
+		.toggle-switch {
+			position: relative;
+			width: 44px;
+			height: 24px;
+			background: #334155;
+			border-radius: 12px;
+			cursor: pointer;
+			transition: background 0.3s ease;
+		}
+
+		.toggle-switch.active {
+			background: #3b82f6;
+		}
+
+		.toggle-knob {
+			position: absolute;
+			top: 2px;
+			left: 2px;
+			width: 20px;
+			height: 20px;
+			background: #e2e8f0;
+			border-radius: 10px;
+			transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+		}
+
+		.toggle-switch.active .toggle-knob {
+			transform: translateX(20px);
+		}
+	</style>
+</head>
+
+<body class="min-h-screen bg-slate-900 text-slate-100">
+	<div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-8 lg:py-12 max-w-7xl">
+		<!-- Header -->
+		<div class="text-center mb-6 sm:mb-8 lg:mb-12">
+			<h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-slate-100 mb-2 sm:mb-3 tracking-tight leading-tight">
+				PX → VW Converter
+			</h1>
+			<p class="text-slate-400 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto">
+				Convert any CSS property from pixels to viewport width units for responsive design
+			</p>
+		</div>
+
+		<div class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+			<!-- Input Panel -->
+			<div class="bg-slate-800 rounded-lg sm:rounded-xl shadow-sm border border-slate-700 p-3 sm:p-4 lg:p-6">
+				<h2 class="text-base sm:text-lg lg:text-xl font-semibold text-slate-100 mb-3 sm:mb-4 lg:mb-6">
+					Input Configuration
+				</h2>
+
+				<div class="space-y-3 sm:space-y-4 lg:space-y-5">
+					<!-- Value Input -->
+					<div>
+						<label for="pxValue" class="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5 sm:mb-2">
+							Value (px)
+						</label>
+						<input type="number" id="pxValue" placeholder="24" class="w-full p-2 sm:p-2.5 lg:p-3 border border-slate-600 bg-slate-900 text-slate-100 rounded-lg sm:rounded-xl text-sm sm:text-base transition-all duration-200" oninput="convert()" />
+					</div>
+
+					<!-- Viewport Widths -->
+					<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
+						<div>
+							<label for="desktopWidth" class="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5 sm:mb-2">
+								Desktop Width
+							</label>
+							<input type="number" id="desktopWidth" value="1728" class="w-full p-2 sm:p-2.5 lg:p-3 border border-slate-600 bg-slate-900 text-slate-100 rounded-lg sm:rounded-xl text-sm sm:text-base transition-all duration-200" oninput="convert()" />
+						</div>
+
+						<div>
+							<label for="mobileWidth" class="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5 sm:mb-2">
+								Mobile Width
+							</label>
+							<input type="number" id="mobileWidth" value="430" class="w-full p-2 sm:p-2.5 lg:p-3 border border-slate-600 bg-slate-900 text-slate-100 rounded-lg sm:rounded-xl text-sm sm:text-base transition-all duration-200" oninput="convert()" />
+						</div>
+					</div>
+
+					<!-- Large Screen Settings -->
+					<div class="bg-gradient-to-br from-blue-950 to-indigo-950 p-3 sm:p-4 rounded-xl border border-blue-900">
+						<div class="flex items-center justify-between mb-3">
+							<h3 class="text-sm sm:text-base font-semibold text-slate-200">Large Screen Adjustment</h3>
+							<div class="toggle-switch" id="largeScreenToggle" onclick="toggleLargeScreen()">
+								<div class="toggle-knob"></div>
+							</div>
+						</div>
+						<div class="mb-3">
+							<label for="largeScreenMultiplier" class="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5 sm:mb-2">
+								Size Multiplier
+							</label>
+							<input type="number" id="largeScreenMultiplier" value="0.9" step="0.05" min="0.5" max="1" class="w-full p-2 sm:p-2.5 text-sm sm:text-base border border-slate-600 bg-slate-900 text-slate-100 rounded-lg sm:rounded-xl transition-all duration-200" oninput="convert()" />
+						</div>
+						<p class="text-xs sm:text-sm text-slate-400">
+							Reduces size on large screens (1920px+)
+						</p>
+					</div>
+
+					<!-- Property Selector -->
+					<div>
+						<label class="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5 sm:mb-2">
+							Select Property
+						</label>
+						<div class="custom-dropdown">
+							<div class="dropdown-button w-full p-2 sm:p-2.5 lg:p-3 border border-slate-600 bg-slate-900 text-slate-100 rounded-lg sm:rounded-xl text-sm sm:text-base transition-all duration-200" onclick="toggleDropdown()">
+								<span id="selectedProperty">Font Size</span>
+							</div>
+							<div class="dropdown-arrow">
+								<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M5 7.5L10 12.5L15 7.5" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+								</svg>
+							</div>
+							<div class="dropdown-menu" id="dropdownMenu">
+								<div class="dropdown-option selected" data-value="font">Font Size</div>
+								<div class="dropdown-option" data-value="padding">Padding</div>
+								<div class="dropdown-option" data-value="margin">Margin</div>
+								<div class="dropdown-option" data-value="gap">Gap</div>
+								<div class="dropdown-option" data-value="space">Space</div>
+								<div class="dropdown-option" data-value="width">Width</div>
+								<div class="dropdown-option" data-value="height">Height</div>
+								<div class="dropdown-option" data-value="min-width">Min Width</div>
+								<div class="dropdown-option" data-value="max-width">Max Width</div>
+								<div class="dropdown-option" data-value="min-height">Min Height</div>
+								<div class="dropdown-option" data-value="max-height">Max Height</div>
+								<div class="dropdown-option" data-value="top">Top</div>
+								<div class="dropdown-option" data-value="bottom">Bottom</div>
+								<div class="dropdown-option" data-value="left">Left</div>
+								<div class="dropdown-option" data-value="right">Right</div>
+								<div class="dropdown-option" data-value="inset">Inset</div>
+								<div class="dropdown-option" data-value="translate">Translate</div>
+								<div class="dropdown-option" data-value="rounded">Rounded</div>
+								<div class="dropdown-option" data-value="border">Border Width</div>
+								<div class="dropdown-option" data-value="outline">Outline Width</div>
+								<div class="dropdown-option" data-value="ring">Ring Width</div>
+								<div class="dropdown-option" data-value="divide">Divide Width</div>
+								<div class="dropdown-option" data-value="stroke">Stroke Width</div>
+								<div class="dropdown-option" data-value="scroll-margin">Scroll Margin</div>
+								<div class="dropdown-option" data-value="scroll-padding">Scroll Padding</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Direction/Side Options -->
+					<div id="sideOptions" class="hidden">
+						<label class="block text-xs sm:text-sm font-medium text-slate-300 mb-3">
+							Select Sides
+						</label>
+						<div id="sideButtons">
+							<!-- Dynamically populated -->
+						</div>
+					</div>
+
+					<!-- Quick Presets -->
+					<div>
+						<label class="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5 sm:mb-2">
+							Quick Values
+						</label>
+						<div class="mobile-scroll">
+							<div class="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-3 2xl:grid-cols-4 gap-1.5 sm:gap-2 min-w-max sm:min-w-0">
+								<button onclick="setPx(4)" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-slate-600 bg-slate-900 text-slate-300 rounded-md sm:rounded-lg hover:bg-slate-700 active:bg-slate-600 transition-all duration-200 font-medium whitespace-nowrap">4px</button>
+								<button onclick="setPx(8)" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-slate-600 bg-slate-900 text-slate-300 rounded-md sm:rounded-lg hover:bg-slate-700 active:bg-slate-600 transition-all duration-200 font-medium whitespace-nowrap">8px</button>
+								<button onclick="setPx(12)" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-slate-600 bg-slate-900 text-slate-300 rounded-md sm:rounded-lg hover:bg-slate-700 active:bg-slate-600 transition-all duration-200 font-medium whitespace-nowrap">12px</button>
+								<button onclick="setPx(16)" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-slate-600 bg-slate-900 text-slate-300 rounded-md sm:rounded-lg hover:bg-slate-700 active:bg-slate-600 transition-all duration-200 font-medium whitespace-nowrap">16px</button>
+								<button onclick="setPx(20)" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-slate-600 bg-slate-900 text-slate-300 rounded-md sm:rounded-lg hover:bg-slate-700 active:bg-slate-600 transition-all duration-200 font-medium whitespace-nowrap">20px</button>
+								<button onclick="setPx(24)" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-slate-600 bg-slate-900 text-slate-300 rounded-md sm:rounded-lg hover:bg-slate-700 active:bg-slate-600 transition-all duration-200 font-medium whitespace-nowrap">24px</button>
+								<button onclick="setPx(32)" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-slate-600 bg-slate-900 text-slate-300 rounded-md sm:rounded-lg hover:bg-slate-700 active:bg-slate-600 transition-all duration-200 font-medium whitespace-nowrap">32px</button>
+								<button onclick="setPx(48)" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-slate-600 bg-slate-900 text-slate-300 rounded-md sm:rounded-lg hover:bg-slate-700 active:bg-slate-600 transition-all duration-200 font-medium whitespace-nowrap">48px</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Results Panel -->
+			<div class="bg-slate-800 rounded-lg sm:rounded-xl shadow-sm border border-slate-700 p-3 sm:p-4 lg:p-6">
+				<div class="flex items-center justify-between mb-4 sm:mb-6">
+					<h2 class="text-base sm:text-lg lg:text-xl font-semibold text-slate-100">Conversion Results</h2>
+					<button onclick="clearAll()" class="text-xs sm:text-sm text-slate-400 hover:text-slate-200 px-2 sm:px-3 py-1 sm:py-2 border border-slate-600 bg-slate-900 rounded-md sm:rounded-lg hover:bg-slate-700 active:bg-slate-600 transition-all duration-200 font-medium">
+						Clear
+					</button>
+				</div>
+
+				<div class="space-y-4 sm:space-y-6">
+					<!-- VW Results -->
+					<div class="space-y-3 sm:space-y-4">
+						<!-- Mobile VW -->
+						<div>
+							<div class="flex items-center justify-between mb-2">
+								<p class="text-xs sm:text-sm font-medium text-slate-300">Mobile VW</p>
+								<span id="mobilePercentage" class="text-xs text-slate-400 bg-slate-900 px-2 py-0.5 sm:py-1 rounded-full font-medium">0%</span>
+							</div>
+							<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-green-950 border border-green-900 rounded-lg sm:rounded-xl">
+								<code id="mobileOutput" class="text-green-400 font-mono text-sm sm:text-lg font-semibold flex-1 break-all sm:break-normal text-center sm:text-left py-1 sm:py-0">--</code>
+								<button onclick="copy('mobileOutput')" class="px-3 py-2 text-xs sm:text-sm bg-green-600 text-white rounded-md sm:rounded-lg hover:bg-green-700 active:bg-green-800 transition-all duration-200 font-medium shrink-0">
+									Copy
+								</button>
+							</div>
+						</div>
+
+						<!-- Desktop VW -->
+						<div>
+							<div class="flex items-center justify-between mb-2">
+								<p class="text-xs sm:text-sm font-medium text-slate-300">Desktop VW</p>
+								<span id="desktopPercentage" class="text-xs text-slate-400 bg-slate-900 px-2 py-0.5 sm:py-1 rounded-full font-medium">0%</span>
+							</div>
+							<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-blue-950 border border-blue-900 rounded-lg sm:rounded-xl">
+								<code id="desktopOutput" class="text-blue-400 font-mono text-sm sm:text-lg font-semibold flex-1 break-all sm:break-normal text-center sm:text-left py-1 sm:py-0">--</code>
+								<button onclick="copy('desktopOutput')" class="px-3 py-2 text-xs sm:text-sm bg-blue-600 text-white rounded-md sm:rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 font-medium shrink-0">
+									Copy
+								</button>
+							</div>
+						</div>
+
+						<!-- Large Screen VW -->
+						<div id="largeScreenVwSection" class="hidden">
+							<div class="flex items-center justify-between mb-2">
+								<p class="text-xs sm:text-sm font-medium text-slate-300">Large Screen VW</p>
+								<span id="largeScreenPercentage" class="text-xs text-slate-400 bg-slate-900 px-2 py-0.5 sm:py-1 rounded-full font-medium">0%</span>
+							</div>
+							<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-purple-950 border border-purple-900 rounded-lg sm:rounded-xl">
+								<code id="largeScreenOutput" class="text-purple-400 font-mono text-sm sm:text-lg font-semibold flex-1 break-all sm:break-normal text-center sm:text-left py-1 sm:py-0">--</code>
+								<button onclick="copy('largeScreenOutput')" class="px-3 py-2 text-xs sm:text-sm bg-purple-600 text-white rounded-md sm:rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all duration-200 font-medium shrink-0">
+									Copy
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<!-- Complete Tailwind Class -->
+					<div class="bg-gradient-to-br from-amber-950 to-orange-950 rounded-xl p-3 sm:p-4 border border-amber-900">
+						<div class="flex items-center justify-between mb-3">
+							<h3 class="text-sm sm:text-lg font-semibold text-slate-200">Complete Tailwind Class</h3>
+							<button onclick="copyCompleteTailwind()" class="text-xs sm:text-sm bg-gradient-to-r from-amber-600 to-orange-600 text-white px-3 py-2 rounded-lg hover:from-amber-700 hover:to-orange-700 active:from-amber-800 active:to-orange-800 transition-all duration-200 font-medium shadow-sm">
+								Copy All
+							</button>
+						</div>
+						<div class="bg-slate-900 rounded-lg p-3 border border-amber-800">
+							<code id="completeTailwindClass" class="text-slate-200 font-mono font-medium block text-xs sm:text-sm break-all leading-relaxed">--</code>
+						</div>
+						<div class="text-xs sm:text-sm text-slate-400 mt-2 space-y-1">
+							<p><strong>Usage:</strong> Copy this complete class and paste it directly into your HTML element.</p>
+							<p id="breakpointInfo" class="hidden"><strong>Breakpoints:</strong> Mobile (default) → Desktop (md:) → Large Screen (3xl:)</p>
+						</div>
+					</div>
+
+					<!-- CSS Classes for Tailwind (only for font) -->
+					<div id="fontCssSection" class="bg-slate-900 rounded-xl p-3 sm:p-4">
+						<h3 class="text-sm sm:text-lg font-semibold text-slate-300 mb-2 sm:mb-3">CSS Classes for Tailwind</h3>
+						<div class="space-y-2 sm:space-y-3">
+							<div class="bg-slate-800 rounded-lg p-2.5 sm:p-3 border border-slate-700">
+								<div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
+									<div class="text-slate-400 text-xs sm:text-sm font-medium">Mobile CSS Class</div>
+									<button onclick="copyTailwindMobile()" class="text-xs sm:text-sm text-blue-400 hover:text-blue-300 px-2 py-1 border border-blue-800 bg-blue-950 rounded-md sm:rounded-lg hover:bg-blue-900 active:bg-blue-800 transition-all duration-200 font-medium self-start sm:self-auto">
+										Copy
+									</button>
+								</div>
+								<code id="tailwindMobile" class="text-purple-400 font-mono font-medium block text-xs sm:text-sm break-all leading-relaxed">--</code>
+							</div>
+							<div class="bg-slate-800 rounded-lg p-2.5 sm:p-3 border border-slate-700">
+								<div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
+									<div class="text-slate-400 text-xs sm:text-sm font-medium">Desktop CSS Class</div>
+									<button onclick="copyTailwindDesktop()" class="text-xs sm:text-sm text-green-400 hover:text-green-300 px-2 py-1 border border-green-800 bg-green-950 rounded-md sm:rounded-lg hover:bg-green-900 active:bg-green-800 transition-all duration-200 font-medium self-start sm:self-auto">
+										Copy
+									</button>
+								</div>
+								<code id="tailwindDesktop" class="text-purple-400 font-mono font-medium block text-xs sm:text-sm break-all leading-relaxed">--</code>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Toast Notification -->
+	<div id="toast" class="fixed top-3 sm:top-4 lg:top-6 right-3 sm:right-4 lg:right-6 bg-green-600 text-white px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3 rounded-lg sm:rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 z-50 max-w-xs">
+		<div class="flex items-center space-x-2 sm:space-x-3">
+			<svg class="w-4 h-4 sm:w-5 sm:h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+				<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+			</svg>
+			<span class="text-xs sm:text-sm lg:text-base font-medium">Copied to clipboard!</span>
+		</div>
+	</div>
+
+	<script>
+		// Property configurations
+		const propertyConfig = {
+			font: {
+				sides: [],
+				prefix: 'text'
+			},
+			padding: {
+				sides: ['top', 'right', 'bottom', 'left'],
+				prefix: 'p',
+				visualLayout: 'box',
+				combos: {
+					'bottom,top': 'y',
+					'left,right': 'x'
+				}
+			},
+			margin: {
+				sides: ['top', 'right', 'bottom', 'left'],
+				prefix: 'm',
+				visualLayout: 'box',
+				combos: {
+					'bottom,top': 'y',
+					'left,right': 'x'
+				}
+			},
+			gap: {
+				sides: ['x', 'y'],
+				prefix: 'gap',
+				visualLayout: 'simple'
+			},
+			space: {
+				sides: ['x', 'y'],
+				prefix: 'space',
+				visualLayout: 'simple'
+			},
+			width: {
+				sides: [],
+				prefix: 'w'
+			},
+			height: {
+				sides: [],
+				prefix: 'h'
+			},
+			'min-width': {
+				sides: [],
+				prefix: 'min-w'
+			},
+			'max-width': {
+				sides: [],
+				prefix: 'max-w'
+			},
+			'min-height': {
+				sides: [],
+				prefix: 'min-h'
+			},
+			'max-height': {
+				sides: [],
+				prefix: 'max-h'
+			},
+			top: {
+				sides: [],
+				prefix: 'top'
+			},
+			bottom: {
+				sides: [],
+				prefix: 'bottom'
+			},
+			left: {
+				sides: [],
+				prefix: 'left'
+			},
+			right: {
+				sides: [],
+				prefix: 'right'
+			},
+			inset: {
+				sides: ['x', 'y'],
+				prefix: 'inset',
+				visualLayout: 'simple'
+			},
+			translate: {
+				sides: ['x', 'y'],
+				prefix: 'translate',
+				visualLayout: 'simple'
+			},
+			rounded: {
+				sides: ['t', 'r', 'b', 'l', 'tl', 'tr', 'br', 'bl'],
+				prefix: 'rounded',
+				visualLayout: 'box',
+				labels: {
+					't': 'Top',
+					'r': 'Right',
+					'b': 'Bottom',
+					'l': 'Left',
+					'tl': 'Top Left',
+					'tr': 'Top Right',
+					'br': 'Bottom Right',
+					'bl': 'Bottom Left'
+				}
+			},
+			border: {
+				sides: ['t', 'r', 'b', 'l'],
+				prefix: 'border',
+				visualLayout: 'box',
+				labels: {
+					't': 'Top',
+					'r': 'Right',
+					'b': 'Bottom',
+					'l': 'Left'
+				}
+			},
+			outline: {
+				sides: [],
+				prefix: 'outline'
+			},
+			ring: {
+				sides: [],
+				prefix: 'ring'
+			},
+			divide: {
+				sides: ['x', 'y'],
+				prefix: 'divide',
+				visualLayout: 'simple'
+			},
+			stroke: {
+				sides: [],
+				prefix: 'stroke'
+			},
+			'scroll-margin': {
+				sides: ['top', 'right', 'bottom', 'left'],
+				prefix: 'scroll-m',
+				visualLayout: 'box',
+				combos: {
+					'bottom,top': 'y',
+					'left,right': 'x'
+				}
+			},
+			'scroll-padding': {
+				sides: ['top', 'right', 'bottom', 'left'],
+				prefix: 'scroll-p',
+				visualLayout: 'box',
+				combos: {
+					'bottom,top': 'y',
+					'left,right': 'x'
+				}
+			}
+		};
+
+		let selectedSides = [];
+		let currentProperty = 'font';
+		let largeScreenEnabled = false;
+
+		// Dropdown functionality
+		function toggleDropdown() {
+			const menu = document.getElementById('dropdownMenu');
+			const button = document.querySelector('.dropdown-button');
+			menu.classList.toggle('show');
+			button.classList.toggle('open');
+		}
+
+		// Close dropdown when clicking outside
+		document.addEventListener('click', function (e) {
+			const dropdown = document.querySelector('.custom-dropdown');
+			if (!dropdown.contains(e.target)) {
+				document.getElementById('dropdownMenu').classList.remove('show');
+				document.querySelector('.dropdown-button').classList.remove('open');
+			}
+		});
+
+		// Handle dropdown option selection
+		document.querySelectorAll('.dropdown-option').forEach(option => {
+			option.addEventListener('click', function () {
+				const value = this.getAttribute('data-value');
+				const text = this.textContent;
+
+				// Update selected text
+				document.getElementById('selectedProperty').textContent = text;
+
+				// Update selected state
+				document.querySelectorAll('.dropdown-option').forEach(opt => {
+					opt.classList.remove('selected');
+				});
+				this.classList.add('selected');
+
+				// Close dropdown
+				document.getElementById('dropdownMenu').classList.remove('show');
+				document.querySelector('.dropdown-button').classList.remove('open');
+
+				// Update property
+				currentProperty = value;
+				updatePropertyOptions();
+			});
+		});
+
+		// Toggle large screen
+		function toggleLargeScreen() {
+			largeScreenEnabled = !largeScreenEnabled;
+			const toggle = document.getElementById('largeScreenToggle');
+			if (largeScreenEnabled) {
+				toggle.classList.add('active');
+			} else {
+				toggle.classList.remove('active');
+			}
+			convert();
+		}
+
+		function updatePropertyOptions() {
+			const config = propertyConfig[currentProperty];
+			const sideButtons = document.getElementById('sideButtons');
+			const sideOptions = document.getElementById('sideOptions');
+			const fontCssSection = document.getElementById('fontCssSection');
+
+			// Show/hide font CSS section
+			if (currentProperty === 'font') {
+				fontCssSection.classList.remove('hidden');
+			} else {
+				fontCssSection.classList.add('hidden');
+			}
+
+			if (config.sides.length === 0) {
+				sideOptions.classList.add('hidden');
+				selectedSides = [];
+			} else {
+				sideOptions.classList.remove('hidden');
+				selectedSides = [];
+
+				// Visual box layout for padding, margin, border, rounded
+				if (config.visualLayout === 'box') {
+					if (config.sides.length === 4 && !config.sides.includes('tl')) {
+						// Standard 4 sides (top, right, bottom, left)
+						sideButtons.innerHTML = `
+							<div class="box-model">
+								<button class="side-visual-btn top" onclick="toggleSideVisual('top', this)">Top</button>
+								<button class="side-visual-btn right" onclick="toggleSideVisual('right', this)">Right</button>
+								<button class="side-visual-btn bottom" onclick="toggleSideVisual('bottom', this)">Bottom</button>
+								<button class="side-visual-btn left" onclick="toggleSideVisual('left', this)">Left</button>
+								<div class="box-center">Element</div>
+							</div>
+						`;
+					} else if (config.sides.includes('tl')) {
+						// Rounded corners (8 positions)
+						sideButtons.innerHTML = `
+							<div class="box-model">
+								<button class="side-visual-btn top-left" onclick="toggleSideVisual('tl', this)">TL</button>
+								<button class="side-visual-btn top" onclick="toggleSideVisual('t', this)">Top</button>
+								<button class="side-visual-btn top-right" onclick="toggleSideVisual('tr', this)">TR</button>
+								<button class="side-visual-btn left" onclick="toggleSideVisual('l', this)">Left</button>
+								<div class="box-center">Element</div>
+								<button class="side-visual-btn right" onclick="toggleSideVisual('r', this)">Right</button>
+								<button class="side-visual-btn bottom-left" onclick="toggleSideVisual('bl', this)">BL</button>
+								<button class="side-visual-btn bottom" onclick="toggleSideVisual('b', this)">Bottom</button>
+								<button class="side-visual-btn bottom-right" onclick="toggleSideVisual('br', this)">BR</button>
+							</div>
+						`;
+					} else {
+						// Border (4 sides with different labels)
+						sideButtons.innerHTML = `
+							<div class="box-model">
+								<button class="side-visual-btn top" onclick="toggleSideVisual('t', this)">Top</button>
+								<button class="side-visual-btn right" onclick="toggleSideVisual('r', this)">Right</button>
+								<button class="side-visual-btn bottom" onclick="toggleSideVisual('b', this)">Bottom</button>
+								<button class="side-visual-btn left" onclick="toggleSideVisual('l', this)">Left</button>
+								<div class="box-center">Element</div>
+							</div>
+						`;
+					}
+				} else if (config.visualLayout === 'simple') {
+					// Simple X/Y layout for gap, space, inset, translate, divide
+					sideButtons.innerHTML = `
+						<div class="simple-sides">
+							${config.sides.map(side => `
+								<button class="simple-side-btn" onclick="toggleSideVisual('${side}', this)">
+									<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+										${side === 'x' ?
+							'<path d="M3 10H17M17 10L13 6M17 10L13 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' :
+							'<path d="M10 3V17M10 17L6 13M10 17L14 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+						}
+									</svg>
+									${side.toUpperCase()}-Axis
+								</button>
+							`).join('')}
+						</div>
+					`;
+				}
+			}
+
+			convert();
+		}
+
+		function toggleSideVisual(side, btn) {
+			const index = selectedSides.indexOf(side);
+			if (index > -1) {
+				selectedSides.splice(index, 1);
+				btn.classList.remove('active');
+			} else {
+				selectedSides.push(side);
+				btn.classList.add('active');
+			}
+			convert();
+		}
+
+		function generateTailwindClass(vw, prefix, sides, property) {
+			if (sides.length === 0) {
+				return `${prefix}-[${vw}]`;
+			}
+
+			const config = propertyConfig[property];
+
+			// Check for combinations (like x, y for padding/margin)
+			if (config.combos) {
+				const sortedSides = [...sides].sort().join(',');
+				if (config.combos[sortedSides]) {
+					return `${prefix}${config.combos[sortedSides]}-[${vw}]`;
+				}
+			}
+
+			// Gap, space, inset, translate, divide work similarly
+			if (property === 'gap' || property === 'space' || property === 'inset' || property === 'translate' || property === 'divide') {
+				if (sides.length === 1) {
+					return `${prefix}-${sides[0]}-[${vw}]`;
+				}
+				// If both selected, just prefix without direction
+				return `${prefix}-[${vw}]`;
+			}
+
+			// Rounded and Border
+			if (property === 'rounded' || property === 'border') {
+				if (sides.length === 1) {
+					return `${prefix}-${sides[0]}-[${vw}]`;
+				}
+				// Multiple sides selected
+				return sides.map(s => `${prefix}-${s}-[${vw}]`).join(' ');
+			}
+
+			// Padding/Margin/Scroll with individual sides
+			if (sides.length === 1) {
+				return `${prefix}${sides[0][0]}-[${vw}]`;
+			}
+
+			// Multiple individual sides
+			return sides.map(s => `${prefix}${s[0]}-[${vw}]`).join(' ');
+		}
+
+		function convert() {
+			const px = parseFloat(document.getElementById('pxValue').value);
+			const desktopWidth = parseFloat(document.getElementById('desktopWidth').value);
+			const mobileWidth = parseFloat(document.getElementById('mobileWidth').value);
+			const largeScreenMultiplier = parseFloat(document.getElementById('largeScreenMultiplier').value);
+			const config = propertyConfig[currentProperty];
+
+			if (!px || !desktopWidth || !mobileWidth || desktopWidth === 0 || mobileWidth === 0) {
+				resetOutputs();
+				return;
+			}
+
+			const vwDesktop = (px / desktopWidth) * 100;
+			const vwMobile = (px / mobileWidth) * 100;
+			const vwLargeScreen = largeScreenEnabled ? vwDesktop * largeScreenMultiplier : vwDesktop;
+
+			// Update VW outputs
+			document.getElementById('desktopOutput').textContent = `${vwDesktop.toFixed(3)}vw`;
+			document.getElementById('mobileOutput').textContent = `${vwMobile.toFixed(3)}vw`;
+			document.getElementById('largeScreenOutput').textContent = `${vwLargeScreen.toFixed(3)}vw`;
+
+			// Update percentages
+			document.getElementById('desktopPercentage').textContent = `${vwDesktop.toFixed(1)}%`;
+			document.getElementById('mobilePercentage').textContent = `${vwMobile.toFixed(1)}%`;
+			document.getElementById('largeScreenPercentage').textContent = `${vwLargeScreen.toFixed(1)}%`;
+
+			// Show/hide large screen sections
+			const largeScreenVwSection = document.getElementById('largeScreenVwSection');
+			const breakpointInfo = document.getElementById('breakpointInfo');
+
+			if (largeScreenEnabled) {
+				largeScreenVwSection.classList.remove('hidden');
+				breakpointInfo.classList.remove('hidden');
+			} else {
+				largeScreenVwSection.classList.add('hidden');
+				breakpointInfo.classList.add('hidden');
+			}
+
+			// Generate Tailwind classes
+			const mobileClass = generateTailwindClass(`${vwMobile.toFixed(3)}vw`, config.prefix, selectedSides, currentProperty);
+			const desktopClass = generateTailwindClass(`${vwDesktop.toFixed(3)}vw`, config.prefix, selectedSides, currentProperty);
+			const largeScreenClass = generateTailwindClass(`${vwLargeScreen.toFixed(3)}vw`, config.prefix, selectedSides, currentProperty);
+
+			// Generate complete Tailwind class
+			let completeClass = mobileClass;
+
+			// Apply `md:` to each class in desktopClass
+			if (desktopClass) {
+				const mdPrefixed = desktopClass
+					.split(" ")
+					.map(cls => `md:${cls}`)
+					.join(" ");
+				completeClass += ` ${mdPrefixed}`;
+			}
+
+			// Apply `3xl:` to each class in largeScreenClass
+			if (largeScreenEnabled && largeScreenClass) {
+				const xlPrefixed = largeScreenClass
+					.split(" ")
+					.map(cls => `3xl:${cls}`)
+					.join(" ");
+				completeClass += ` ${xlPrefixed}`;
+			}
+
+			document.getElementById('completeTailwindClass').textContent = completeClass;
+
+			// Generate CSS classes for font size (only for font property)
+			if (currentProperty === 'font') {
+				const mobileCssClass = `.text${px}px-mobile {
+    @apply text-[${vwMobile.toFixed(3)}vw];
+}`;
+
+				let desktopCssClass;
+				if (largeScreenEnabled) {
+					desktopCssClass = `.text${px}px-desktop {
+    @apply md:!text-[${vwDesktop.toFixed(3)}vw] 3xl:!text-[${vwLargeScreen.toFixed(3)}vw];
+}`;
+				} else {
+					desktopCssClass = `.text${px}px-desktop {
+    @apply md:!text-[${vwDesktop.toFixed(3)}vw];
+}`;
+				}
+
+				document.getElementById('tailwindMobile').textContent = mobileCssClass;
+				document.getElementById('tailwindDesktop').textContent = desktopCssClass;
+			}
+		}
+
+		function resetOutputs() {
+			document.getElementById('desktopOutput').textContent = '--';
+			document.getElementById('mobileOutput').textContent = '--';
+			document.getElementById('largeScreenOutput').textContent = '--';
+			document.getElementById('desktopPercentage').textContent = '0%';
+			document.getElementById('mobilePercentage').textContent = '0%';
+			document.getElementById('largeScreenPercentage').textContent = '0%';
+			document.getElementById('tailwindMobile').textContent = '--';
+			document.getElementById('tailwindDesktop').textContent = '--';
+			document.getElementById('completeTailwindClass').textContent = '--';
+		}
+
+		function setPx(value) {
+			document.getElementById('pxValue').value = value;
+			convert();
+		}
+
+		function clearAll() {
+			document.getElementById('pxValue').value = '';
+			// Clear all side selections
+			selectedSides = [];
+			const visualBtns = document.querySelectorAll('.side-visual-btn, .simple-side-btn');
+			visualBtns.forEach(btn => btn.classList.remove('active'));
+			resetOutputs();
+		}
+
+		function copy(id) {
+			const text = document.getElementById(id).textContent;
+			if (text === '--') return;
+
+			navigator.clipboard.writeText(text).then(() => {
+				showToast();
+			}).catch(() => {
+				// Fallback for older browsers
+				const textArea = document.createElement('textarea');
+				textArea.value = text;
+				document.body.appendChild(textArea);
+				textArea.select();
+				document.execCommand('copy');
+				document.body.removeChild(textArea);
+				showToast();
+			});
+		}
+
+		function copyTailwindMobile() {
+			const mobile = document.getElementById('tailwindMobile').textContent;
+			if (mobile === '--') return;
+			copy('tailwindMobile');
+		}
+
+		function copyTailwindDesktop() {
+			const desktop = document.getElementById('tailwindDesktop').textContent;
+			if (desktop === '--') return;
+			copy('tailwindDesktop');
+		}
+
+		function copyCompleteTailwind() {
+			const complete = document.getElementById('completeTailwindClass').textContent;
+			if (complete === '--') return;
+			copy('completeTailwindClass');
+		}
+
+		function showToast() {
+			const toast = document.getElementById('toast');
+			toast.classList.remove('translate-x-full');
+			setTimeout(() => {
+				toast.classList.add('translate-x-full');
+			}, 2000);
+		}
+
+		// Initialize
+		updatePropertyOptions();
+		convert();
+	</script>
+</body>
+
+</html>
