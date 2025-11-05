@@ -183,13 +183,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👤 Author
-
-**Geethesh Nair**
-
--   GitHub: [@geetheshnair](https://github.com/geetheshnair)
--   LinkedIn: [Geethesh Nair](https://linkedin.com/in/geetheshnair)
-
 ## 🙏 Acknowledgments
 
 -   Inspired by the need for better responsive design tools
